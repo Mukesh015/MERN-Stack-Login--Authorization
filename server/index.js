@@ -7,14 +7,24 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
-mongoose.connect("mongodb+srv://Mukesh:Mukesh%402002@learn-mongodb.yxla1ty.mongodb.net/employee ")
+const PORT = 5173;
 
-app.post('/register',(req,res)=>{
-    EmployeeModel.create(req.body)
-    .then(employees=>res.json(employees))
-    .catch(err =>res.json(err))
+mongoose.connect("mongodb+srv://Mukesh:Mukesh%402002@learn-mongodb.yxla1ty.mongodb.net/employee")
+
+app.post('/',async(req,res)=>{
+
+    const {uname,email,password} = req.body;
+    try {
+        console.log(`Received data: Name - ${uname}, Email - ${email}, Password - ${password}`);
+        const newUser = new EmployeeModel({uname,email,password})
+        await newUser.save();
+        res.status(200).send({ message: 'User registered successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send({ message: 'Internal server error' });
+    }
 })
 
-app.listen(3001, ()=>{
-    console.log("server is running on 3001 port")
+app.listen(PORT, ()=>{
+    console.log(`server is running on http://localhost:${PORT}`)
 })
